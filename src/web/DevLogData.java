@@ -73,10 +73,10 @@ public class DevLogData {
             Map<String, Object> mapJson;
 
             mapJson = (Map<String, Object>) new JSONDeserializer<Map<String, Object>>().deserialize(strJson);
-            mLogger.debug("mapJson=" + mapJson);
+            mLogger.trace("mapJson=" + mapJson);
 
             Map<String, Object> meta = (Map<String, Object>) mapJson.get("meta");
-            mLogger.debug("meta=" + meta);
+            mLogger.trace("meta=" + meta);
             if (meta == null) {
                 mLogger.warn("no meta data\n");
                 return;
@@ -85,7 +85,7 @@ public class DevLogData {
             this.did = (String)meta.get("did");
             this.dataType = (String)meta.get("type");
             ArrayList<?> objects = (ArrayList<?>) mapJson.get("objects");
-            mLogger.debug("objects=" + objects);
+            mLogger.trace("objects=" + objects);
            // did = (String)mapJson.get("meta")
             this.datalist = new ArrayList<DevData>();
             for (Object mem : objects) {

@@ -148,13 +148,13 @@ public class GiziwitOpenApi {
         String para = "type=" + type.toLowerCase() + "&start_time=" + start.getTimeInMillis()/1000 + "&end_time=" + end.getTimeInMillis()/1000;
         mLogger.trace("send get=>" + url + para);
         result = gizi.sendGet(url, para, true, true);
-        mLogger.debug("getDevLog result=" + result);
+        mLogger.trace("getDevLog result=" + result);
         if (result.charAt(0) == '"' && result.charAt(result.length() - 1) == '"') {
             result = result.substring(1, result.length() - 1);
-            mLogger.debug("remove head and end \" result = '{}'", result);
+            mLogger.trace("remove head and end \" result = '{}'", result);
         }
         result = result.replaceAll("\\\\\"", "\"");
-        mLogger.debug("new result = '{}'", result);
+        mLogger.trace("new result = '{}'", result);
 
         
         // "{\"meta\": {\"sort\": \"desc\", \"limit\": 20, \"end_time\": 1514379508, \"did\": \"xxxx\", \"skip\": 0, \"start_time\": 1514217600, \"total\": 2, \"type\": \"cmd\"}, \"objects\": [{\"ip\": \"139.227.220.135\", \"payload_bin\": \"000000030700009114020018\", \"type\": \"dev2app\", \"timestamp\": 1514379445.407}, {\"ip\": \"139.227.220.135\", \"payload_bin\": \"000000030700009114020019\", \"type\": \"dev2app\", \"timestamp\": 1514379435.139}]}"
