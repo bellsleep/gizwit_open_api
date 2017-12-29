@@ -84,7 +84,7 @@ public class GiziwitOpenApi {
         //mLogger.debug("post para=" + para);
         result = gizi.sendPost("http://api.gizwits.com/app/login", para, true, false);
 
-        mLogger.trace(result);
+        mLogger.trace("login result=" + result);
         userinfo.parseJsonFromLogin(result);
 
         if (userinfo.token != null)
@@ -112,7 +112,7 @@ public class GiziwitOpenApi {
         str_body += "\",\"mac\":\"" + devinfo.mac + "\"}";
 
         String result = gizi.sendPost("http://api.gizwits.com/app/bind_mac", str_body, true, true, mapHead);
-        mLogger.trace("post result=" + result);
+        mLogger.trace("bind_mac result=" + result);
         /*
          * {"remark": "", "ws_port": 8080, "did": "xxxx",
          * "port_s": 8883, "is_disabled": false, "host": "sandbox.gizwits.com",
@@ -124,7 +124,7 @@ public class GiziwitOpenApi {
         return result;
     }
 
-    public String getDevLog(String type, Calendar start, Calendar end) {
+    public String getDevLog(DeviceInfo devinfo, String type, Calendar start, Calendar end) {
         String result;
         if (!"cmd".equalsIgnoreCase(type) && !"online".equalsIgnoreCase(type)) {
             mLogger.warn("getLog type must be cmd or online, but real:" + type);
@@ -134,16 +134,29 @@ public class GiziwitOpenApi {
         } else {
             mLogger.warn("time is invalid! start={},end={}", start, end);
         }
+        if (str_val_did == null && (devinfo == null || devinfo.did == null)) {
+            mLogger.error("getDevLog did is null!");
+            return null;
+        }
+        if (devinfo != null && devinfo.did != null)
+            str_val_did = devinfo.did;
 
         mLogger.debug("getLog with type:{} time:{}-{}", type, start.getTime(), end.getTime());
 
         //https://api.gizwits.com/app/devices/{did}/raw_data?type={type}&start_time={start_time}&end_time={end_time}
         String url="https://api.gizwits.com/app/devices/" + str_val_did + "/raw_data";
         String para = "type=" + type.toLowerCase() + "&start_time=" + start.getTimeInMillis()/1000 + "&end_time=" + end.getTimeInMillis()/1000;
-        mLogger.debug("send get=>" + url + para);
+        mLogger.trace("send get=>" + url + para);
         result = gizi.sendGet(url, para, true, true);
+        mLogger.debug("getDevLog result=" + result);
+        if (result.charAt(0) == '"' && result.charAt(result.length() - 1) == '"') {
+            result = result.substring(1, result.length() - 1);
+            mLogger.debug("remove head and end \" result = '{}'", result);
+        }
+        result = result.replaceAll("\\\\\"", "\"");
+        mLogger.debug("new result = '{}'", result);
 
-        mLogger.debug("get result=" + result);
+        
         // "{\"meta\": {\"sort\": \"desc\", \"limit\": 20, \"end_time\": 1514379508, \"did\": \"xxxx\", \"skip\": 0, \"start_time\": 1514217600, \"total\": 2, \"type\": \"cmd\"}, \"objects\": [{\"ip\": \"139.227.220.135\", \"payload_bin\": \"000000030700009114020018\", \"type\": \"dev2app\", \"timestamp\": 1514379445.407}, {\"ip\": \"139.227.220.135\", \"payload_bin\": \"000000030700009114020019\", \"type\": \"dev2app\", \"timestamp\": 1514379435.139}]}"
         //parseJsonFromDevLog(result);
         return result;
